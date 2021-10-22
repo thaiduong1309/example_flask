@@ -1,32 +1,25 @@
-from flask import Flask, render_template, url_for
-app = Flask(__name__)
+import yfinance as yf
+import streamlit as st
 
-posts = [
-    {
-        'author': 'Corey Schafer',
-        'title': 'Blog Post 1',
-        'content': 'First post content',
-        'date_posted': 'April 20, 2018'
-    },
-    {
-        'author': 'Jane Doe',
-        'title': 'Blog Post 2',
-        'content': 'Second post content',
-        'date_posted': 'April 21, 2018'
-    }
-]
+st.write("""
+# Simple Stock Price App
+Shown are the stock **closing price** and ***volume*** of Google!
+""")
 
+# https://towardsdatascience.com/how-to-get-stock-data-using-python-c0de1df17e75
+#define the ticker symbol
+tickerSymbol = 'GOOGL'
+#get data on this ticker
+tickerData = yf.Ticker(tickerSymbol)
+#get the historical prices for this ticker
+tickerDf = tickerData.history(period='1d', start='2010-5-31', end='2020-5-31')
+# Open	High	Low	Close	Volume	Dividends	Stock Splits
 
-@app.route("/")
-@app.route("/home")
-def home():
-    return render_template('home.html', posts=posts)
-
-
-@app.route("/about")
-def about():
-    return render_template('about.html', title='About')
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
+st.write("""
+## Closing Price
+""")
+st.line_chart(tickerDf.Close)
+st.write("""
+## Volume Price
+""")
+st.line_chart(tickerDf.Volume)
